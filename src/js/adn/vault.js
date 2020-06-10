@@ -423,6 +423,10 @@
   function layoutAd($div, adset) {
 
     // append the display
+    if (adset.child(0).private) {
+      // don't render if it is marked as private
+      return;
+    }
     (adset.child(0).contentType === 'text' ?
       appendTextDisplayTo : appendDisplayTo)($div, adset);
 

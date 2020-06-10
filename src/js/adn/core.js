@@ -864,7 +864,7 @@
 
   const adsForUI = function (pageUrl) {
     return {
-      data: adlist(pageUrl),
+      data: adlist(pageUrl, false, true),
       pageUrl: pageUrl,
       prefs: contentPrefs(),
       current: activeVisit(),
@@ -1710,7 +1710,7 @@
    * Omits text-ads if specified in preferences
    * Called also from tab.js::µb.updateBadgeAsync()
    */
-  const adlist = exports.adlist = function (pageUrl, currentOnly) {
+  const adlist = exports.adlist = function (pageUrl, currentOnly, isUI) {
     admap = admap || µb.userSettings.admap;
     const result = [], pages = pageUrl ?
       [ YaMD5.hashStr(pageUrl) ] : Object.keys(admap);
@@ -1719,9 +1719,19 @@
         const hashes = Object.keys(admap[pages[i]]);
         for (let j = 0; j < hashes.length; j++) {
           const ad = admap[pages[i]][hashes[j]];
+
           // ignore text-ads according to parseTextAds prefe
           if (ad && (µb.userSettings.parseTextAds || ad.contentType !== 'text')) {
-            if (!currentOnly || ad.current) result.push(ad);
+            if (!currentOnly || ad.current) {
+              if (isUI && ad.private) {
+                const clone = Object.assign({}, ad);
+                clone.hash = hashes[j];
+                result.push(clone)
+                console.log("hash", admap)
+              } else {
+                result.push(ad);
+              }
+            }
           }
         }
       }
@@ -1999,12 +2009,12 @@ const verifyList = exports.verifyList = function (note, lists) {
           if (ad.private == true) {
             // clear data & relocate to a new bin?
             ad.contentData = {}
-            ad.title = ""
-            ad.hash = hashes[j]
-            ad.targetUrl = ""
-            ad.pageTitle = ""
-            ad.pageUrl = ""
-            ad.resolvedTargetUrl = ""
+            delete ad.title;
+            delete ad.targetUrl;
+            delete ad.pageTitle;
+            delete ad.pageUrl;
+            delete ad.resolvedTargetUrl;
+            delete ad.requestId;
 
             const privatePageHash = YaMD5.hashStr("");
             if (admap[privatePageHash] == undefined) {
