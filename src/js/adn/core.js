@@ -2010,11 +2010,13 @@ const verifyList = exports.verifyList = function (note, lists) {
             // clear data & relocate to a new bin?
             ad.contentData = {}
             delete ad.title;
-            delete ad.targetUrl;
             delete ad.pageTitle;
             delete ad.pageUrl;
             delete ad.resolvedTargetUrl;
             delete ad.requestId;
+            // TODO: store ad-network
+            ad.adNetwork = parseHostname(ad.targetUrl)
+            delete ad.targetUrl;
 
             const privatePageHash = YaMD5.hashStr("");
             if (admap[privatePageHash] == undefined) {

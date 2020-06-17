@@ -238,7 +238,7 @@
         if (ad.contentType == "img") data.totalImg ++;
         else if (ad.contentType == "text") data.totalText ++;
         try {
-          let network = parseHostname(ad.targetUrl);
+          let network = ad.adNetwork ? ad.adNetwork : parseHostname(ad.targetUrl);
           // merge common ad system
           if (network.indexOf("adssettings.google") > -1 ) {
             //ignore adsettings
