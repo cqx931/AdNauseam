@@ -1118,7 +1118,10 @@
    *  3) whether *any* block on the domain is valid (domain in allowAnyBlockOnDomains)
    *  		if so, return true;
    *
-   *  4) if any list that it was found on allows blocks
+   *  4) whether strictBlocking Mode is on (strictBlockingMode == true)
+   *     if so, return true;
+   *
+   *  5) if any list that it was found on allows blocks
    *  		if so, return true;
    */
   const isBlockableRequest = function (context) {
@@ -1142,6 +1145,10 @@
     if (µb.redirectEngine.toURL(context)) {
 
       logNetBlock('*Redirect*', context.docDomain + ' => ' + context.url, context);
+      return true;
+    }
+
+    if (µb.userSettings.strictBlockingMode === true) { // 4
       return true;
     }
 
